@@ -165,10 +165,10 @@ function App() {
                         Tipo
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Categoria
+                        Preço Sugerido
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Fabricante
+                        Código
                       </th>
                     </tr>
                   </thead>
@@ -176,19 +176,21 @@ function App() {
                     {equipments.map((equipment, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {getDisplayValue(equipment.nome || equipment.name)}
+                          {getDisplayValue(equipment.nome)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                          {getDisplayValue(equipment.descricao || equipment.description)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {getDisplayValue(equipment.tipo || equipment.type)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {getDisplayValue(equipment.categoria || equipment.category)}
+                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
+                          <div className="truncate" title={equipment.descricao}>
+                            {getDisplayValue(equipment.descricao)}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {getDisplayValue(equipment.fabricante || equipment.manufacturer)}
+                          {getDisplayValue(equipment.tipo)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {getDisplayValue(equipment.codigo)}
                         </td>
                       </tr>
                     ))}
@@ -203,18 +205,18 @@ function App() {
                     <div className="space-y-2">
                       <div>
                         <span className="text-sm font-medium text-gray-900">
-                          {getDisplayValue(equipment.nome || equipment.name)}
+                          {getDisplayValue(equipment.nome)}
                         </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        <strong>Descrição:</strong> {getDisplayValue(equipment.descricao || equipment.description)}
+                        <strong>Descrição:</strong> {getDisplayValue(equipment.descricao)}
                       </div>
                       <div className="flex justify-between text-sm text-gray-500">
-                        <span><strong>Tipo:</strong> {getDisplayValue(equipment.tipo || equipment.type)}</span>
-                        <span><strong>Categoria:</strong> {getDisplayValue(equipment.categoria || equipment.category)}</span>
+                        <span><strong>Tipo:</strong> {getDisplayValue(equipment.tipo)}</span>
+                        <span><strong>Código:</strong> {getDisplayValue(equipment.codigo)}</span>
                       </div>
                       <div className="text-sm text-gray-500">
-                        <strong>Fabricante:</strong> {getDisplayValue(equipment.fabricante || equipment.manufacturer)}
+                        <strong>Preço:</strong> {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}
                       </div>
                     </div>
                   </div>
