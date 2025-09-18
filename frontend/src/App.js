@@ -13,6 +13,10 @@ function App() {
   const [searched, setSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [selectedEquipment, setSelectedEquipment] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [equipmentDetails, setEquipmentDetails] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const searchEquipments = async (page = 1) => {
     if (!searchTerm.trim()) {
