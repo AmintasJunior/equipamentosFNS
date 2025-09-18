@@ -87,6 +87,15 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+class EquipmentDetailRequest(BaseModel):
+    coItem: str
+    ano: int = 2025
+
+class EquipmentDetailResponse(BaseModel):
+    success: bool
+    data: Optional[dict] = None
+    message: Optional[str] = None
+
 @api_router.post("/consulta-equipamentos", response_model=EquipmentSearchResponse)
 async def consulta_equipamentos(request: EquipmentSearchRequest):
     """
