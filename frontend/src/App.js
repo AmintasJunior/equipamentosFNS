@@ -66,6 +66,41 @@ function App() {
     searchEquipments(newPage);
   };
 
+  const handleViewDetails = async (equipment) => {
+    if (!equipment.codigo) {
+      setError("Código do equipamento não encontrado");
+      return;
+    }
+
+    setDetailsLoading(true);
+    setSelectedEquipment(equipment);
+    setShowModal(true);
+    
+    try {
+      const response = await axios.post(`${API}/detalhes-equipamento`, {
+        coItem: equipment.codigo,
+        ano: 2025
+      });
+
+      if (response.data.success) {
+        setEquipmentDetails(response.data.data);
+      } else {
+        setError(response.data.message || "Erro ao carregar detalhes");
+      }
+    } catch (e) {
+      console.error(e);
+      setError("Erro ao carregar detalhes do equipamento");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedEquipment(null);
+    setEquipmentDetails(null);
+  };
+
   const getDisplayValue = (value) => {
     return value && value !== "null" && value !== "" ? value : "-";
   };
