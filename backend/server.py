@@ -189,6 +189,74 @@ async def consulta_equipamentos(request: EquipmentSearchRequest):
             message=f"Erro interno: {str(e)}"
         )
 
+@api_router.post("/detalhes-equipamento", response_model=EquipmentDetailResponse)
+async def detalhes_equipamento(request: EquipmentDetailRequest):
+    """
+    Consulta detalhes específicos de um equipamento na API do Ministério da Saúde
+    """
+    try:
+        # Construct the detail API URL
+        detail_url = f"https://consultafns.saude.gov.br/recursos/equipamento/{request.ano}/{request.coItem}/0/0"
+        
+        logger.info(f"Buscando detalhes para coItem: {request.coItem}")
+        
+        # Make the API call with timeout
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(detail_url)
+            
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                logger.info(f"Detalhes recebidos: {data}")
+                
+                # Extract relevant details from the response
+                equipment_details = {}
+                if isinstance(data, dict):
+                    equipment_details = {
+                        "programasEstrategicos": data.get("programasEstrategicos", []),
+                        "ambientes": data.get("ambientes", []),
+                        "definicao": data.get("definicao", ""),
+                        "especificacaoSugerida": data.get("especificacaoSugerida", ""),
+                        "fornecedores": data.get("fornecedores", []),
+                        "precoSugerido": data.get("precoSugerido", 0),
+                        "descricao": data.get("descricao", ""),
+                        "classificacao": data.get("classificacao", ""),
+                        "coItem": data.get("coItem", request.coItem)
+                    }
+                
+                return EquipmentDetailResponse(
+                    success=True,
+                    data=equipment_details,
+                    message="Detalhes carregados com sucesso"
+                )
+                
+            except Exception as json_error:
+                logger.error(f"Erro ao processar JSON dos detalhes: {json_error}")
+                return EquipmentDetailResponse(
+                    success=False,
+                    message=f"Erro ao processar resposta da API de detalhes: {str(json_error)}"
+                )
+                
+        else:
+            logger.error(f"Erro na API de detalhes: {response.status_code}")
+            return EquipmentDetailResponse(
+                success=False,
+                message=f"Erro na consulta de detalhes: Status {response.status_code}"
+            )
+            
+    except httpx.TimeoutException:
+        logger.error("Timeout na consulta de detalhes")
+        return EquipmentDetailResponse(
+            success=False,
+            message="Timeout na consulta de detalhes. Tente novamente."
+        )
+    except Exception as e:
+        logger.error(f"Erro inesperado nos detalhes: {e}")
+        return EquipmentDetailResponse(
+            success=False,
+            message=f"Erro interno nos detalhes: {str(e)}"
+        )
+
 # Include the router in the main app
 app.include_router(api_router)
 
