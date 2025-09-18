@@ -194,11 +194,8 @@ function App() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nome
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Descrição
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">
+                        Equipamento
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Tipo
@@ -206,21 +203,16 @@ function App() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Preço Sugerido
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Código
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Detalhes
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {equipments.map((equipment, index) => (
                       <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {getDisplayValue(equipment.nome)}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs">
-                          <div className="truncate" title={equipment.descricao}>
-                            {getDisplayValue(equipment.descricao)}
-                          </div>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          <div className="font-medium">{getDisplayValue(equipment.descricao)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {getDisplayValue(equipment.tipo)}
@@ -228,8 +220,14 @@ function App() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {getDisplayValue(equipment.codigo)}
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                          <button
+                            onClick={() => handleViewDetails(equipment)}
+                            className="text-green-600 hover:text-green-900 transition-colors duration-200"
+                            title="Ver detalhes"
+                          >
+                            👁️
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -242,20 +240,21 @@ function App() {
                 {equipments.map((equipment, index) => (
                   <div key={index} className="p-4 border-b border-gray-200 last:border-b-0">
                     <div className="space-y-2">
-                      <div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {getDisplayValue(equipment.nome)}
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-medium text-gray-900 flex-1 pr-2">
+                          {getDisplayValue(equipment.descricao)}
                         </span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <strong>Descrição:</strong> {getDisplayValue(equipment.descricao)}
+                        <button
+                          onClick={() => handleViewDetails(equipment)}
+                          className="text-green-600 hover:text-green-900 transition-colors duration-200 ml-2"
+                          title="Ver detalhes"
+                        >
+                          👁️
+                        </button>
                       </div>
                       <div className="flex justify-between text-sm text-gray-500">
                         <span><strong>Tipo:</strong> {getDisplayValue(equipment.tipo)}</span>
-                        <span><strong>Código:</strong> {getDisplayValue(equipment.codigo)}</span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        <strong>Preço:</strong> {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}
+                        <span><strong>Preço:</strong> {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}</span>
                       </div>
                     </div>
                   </div>
