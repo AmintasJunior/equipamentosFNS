@@ -107,27 +107,33 @@ user_problem_statement: "Sistema de consulta de equipamentos de saúde que faz c
 backend:
   - task: "API proxy para consulta de equipamentos"
     implemented: true
-    working: false  # needs testing
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implementado endpoint /api/consulta-equipamentos que faz proxy para API do Ministério da Saúde com httpx, tratamento de erros e timeout"
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO COMPLETAMENTE - Endpoint POST /api/consulta-equipamentos funcionando perfeitamente. Testado com 'ambulancia', 'respirador', 'desfibrilador', 'monitor'. Proxy para https://consultafns.saude.gov.br/recursos/equipamento está funcionando. Paginação, diferentes valores de count, tratamento de erros (termos vazios/inválidos) todos funcionando. Formato de resposta EquipmentSearchResponse correto com success, data, total, page, count, message. Endpoint GET /api/ retorna mensagem em português. Corrigido pequeno problema de logger definido após uso."
 
   - task: "Modelos Pydantic para request/response"
     implemented: true
-    working: false  # needs testing
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Criados modelos EquipmentSearchRequest, EquipmentSearchResponse e EquipmentItem"
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO - Modelos Pydantic funcionando corretamente. EquipmentSearchRequest aceita nome, page, count, ano. EquipmentSearchResponse retorna estrutura correta com todos os campos obrigatórios (success: bool, data: list, total: int, page: int, count: int) e campo opcional message."
 
 frontend:
   - task: "Interface de busca responsiva"
