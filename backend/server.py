@@ -114,38 +114,43 @@ async def consulta_equipamentos(request: EquipmentSearchRequest):
         if response.status_code == 200:
             try:
                 data = response.json()
+                logger.info(f"Resposta da API: {data}")
                 
-                # Extract the equipment list from the response
+                # Extract the equipment list from the Brazilian Health API response
                 equipamentos = []
-                if isinstance(data, dict):
-                    # Check various possible keys in the response
-                    if "lista" in data:
-                        equipamentos = data["lista"]
-                    elif "data" in data:
-                        equipamentos = data["data"]
-                    elif "equipamentos" in data:
-                        equipamentos = data["equipamentos"]
-                    elif "results" in data:
-                        equipamentos = data["results"]
-                    else:
-                        # If it's a dict with unknown structure, try to use it directly
-                        equipamentos = [data] if data else []
-                elif isinstance(data, list):
-                    equipamentos = data
+                total_items = 0
                 
+                if isinstance(data, dict) and "resultado" in data:
+                    resultado = data["resultado"]
+                    if "itensPagina" in resultado:
+                        equipamentos = resultado["itensPagina"]
+                        total_items = resultado.get("totalItens", len(equipamentos))
+                    
                 # Process and clean the equipment data
                 processed_equipamentos = []
                 for item in equipamentos:
                     if isinstance(item, dict):
-                        processed_equipamentos.append(item)
+                        # Map the Brazilian API structure to our frontend structure
+                        processed_item = {
+                            "nome": item.get("sinonimos") or item.get("descricao", ""),
+                            "descricao": item.get("descricao", ""),
+                            "tipo": item.get("classificacao", ""),
+                            "categoria": f"Grupo {item.get('coGrupo', '')}" if item.get('coGrupo') else "",
+                            "fabricante": "-",  # Not provided by this API
+                            "preco": item.get("precoSugerido"),
+                            "codigo": item.get("coItem"),
+                            "grupo": item.get("coGrupo"),
+                            "subgrupo": item.get("coSubgrupo")
+                        }
+                        processed_equipamentos.append(processed_item)
                 
                 return EquipmentSearchResponse(
                     success=True,
                     data=processed_equipamentos,
-                    total=len(processed_equipamentos),
+                    total=total_items,
                     page=request.page,
                     count=request.count,
-                    message=f"Encontrados {len(processed_equipamentos)} equipamentos para '{request.nome}'"
+                    message=f"Encontrados {total_items} equipamentos para '{request.nome}'"
                 )
                 
             except Exception as json_error:
