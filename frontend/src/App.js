@@ -302,6 +302,125 @@ function App() {
         )}
       </div>
 
+      {/* Modal de Detalhes */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              {/* Header do Modal */}
+              <div className="flex justify-between items-center pb-3 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {selectedEquipment ? selectedEquipment.descricao : 'Detalhes do Equipamento'}
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Conteúdo do Modal */}
+              <div className="mt-4">
+                {detailsLoading ? (
+                  <div className="flex justify-center items-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                    <span className="ml-2 text-gray-600">Carregando detalhes...</span>
+                  </div>
+                ) : equipmentDetails ? (
+                  <div className="space-y-4">
+                    {/* Definição */}
+                    {equipmentDetails.definicao && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Definição:</h4>
+                        <p className="text-gray-600 text-sm">{equipmentDetails.definicao}</p>
+                      </div>
+                    )}
+
+                    {/* Especificação Sugerida */}
+                    {equipmentDetails.especificacaoSugerida && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Especificação Sugerida:</h4>
+                        <p className="text-gray-600 text-sm">{equipmentDetails.especificacaoSugerida}</p>
+                      </div>
+                    )}
+
+                    {/* Preço Sugerido */}
+                    {equipmentDetails.precoSugerido && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Preço Sugerido:</h4>
+                        <p className="text-green-600 font-medium">
+                          R$ {equipmentDetails.precoSugerido.toLocaleString('pt-BR')}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Programas Estratégicos */}
+                    {equipmentDetails.programasEstrategicos && equipmentDetails.programasEstrategicos.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Programas Estratégicos:</h4>
+                        <ul className="text-gray-600 text-sm space-y-1">
+                          {equipmentDetails.programasEstrategicos.map((programa, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-green-500 mr-2">•</span>
+                              {typeof programa === 'string' ? programa : programa.nome || JSON.stringify(programa)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Ambientes */}
+                    {equipmentDetails.ambientes && equipmentDetails.ambientes.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Ambientes:</h4>
+                        <ul className="text-gray-600 text-sm space-y-1">
+                          {equipmentDetails.ambientes.map((ambiente, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-blue-500 mr-2">•</span>
+                              {typeof ambiente === 'string' ? ambiente : ambiente.nome || JSON.stringify(ambiente)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Fornecedores */}
+                    {equipmentDetails.fornecedores && equipmentDetails.fornecedores.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-2">Fornecedores:</h4>
+                        <ul className="text-gray-600 text-sm space-y-1">
+                          {equipmentDetails.fornecedores.map((fornecedor, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-purple-500 mr-2">•</span>
+                              {typeof fornecedor === 'string' ? fornecedor : fornecedor.nome || JSON.stringify(fornecedor)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-center py-4">
+                    Não foi possível carregar os detalhes do equipamento.
+                  </div>
+                )}
+              </div>
+
+              {/* Footer do Modal */}
+              <div className="mt-6 pt-3 border-t flex justify-end">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="bg-gray-800 text-white mt-16">
         <div className="container mx-auto px-4 py-6 text-center">
