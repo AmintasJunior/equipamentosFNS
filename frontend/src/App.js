@@ -146,8 +146,8 @@ function App() {
                   id="search"
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Ex: ambulância, respirador, desfibrilador..."
+                  onChange={handleSearchInputChange}
+                  placeholder="Ex: ambulancia, respirador, desfibrilador..."
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   disabled={loading}
                 />
