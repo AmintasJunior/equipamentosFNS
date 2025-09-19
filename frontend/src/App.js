@@ -17,6 +17,8 @@ function App() {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [equipmentDetails, setEquipmentDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
 
   const searchEquipments = async (page = 1) => {
     if (!searchTerm.trim()) {
