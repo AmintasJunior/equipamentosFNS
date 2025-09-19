@@ -223,10 +223,13 @@ function App() {
                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                           <button
                             onClick={() => handleViewDetails(equipment)}
-                            className="text-green-600 hover:text-green-900 transition-colors duration-200"
+                            className="text-green-600 hover:text-green-700 transition-colors duration-200"
                             title="Ver detalhes"
                           >
-                            👁️
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                            </svg>
                           </button>
                         </td>
                       </tr>
