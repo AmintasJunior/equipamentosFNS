@@ -103,6 +103,50 @@ function App() {
     setEquipmentDetails(null);
   };
 
+  const formatPrice = (price) => {
+    if (!price) return '-';
+    return `R$ ${price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const addToCart = (equipment) => {
+    const existingItem = cart.find(item => item.codigo === equipment.codigo);
+    
+    if (existingItem) {
+      setCart(cart.map(item => 
+        item.codigo === equipment.codigo 
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCart([...cart, { ...equipment, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (codigo) => {
+    setCart(cart.filter(item => item.codigo !== codigo));
+  };
+
+  const updateQuantity = (codigo, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(codigo);
+      return;
+    }
+    
+    setCart(cart.map(item => 
+      item.codigo === codigo 
+        ? { ...item, quantity: quantity }
+        : item
+    ));
+  };
+
+  const getCartTotal = () => {
+    return cart.reduce((total, item) => total + (item.preco * item.quantity), 0);
+  };
+
+  const getCartItemsCount = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   const getDisplayValue = (value) => {
     return value && value !== "null" && value !== "" ? value : "-";
   };
