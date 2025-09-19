@@ -211,7 +211,24 @@ async def detalhes_equipamento(request: EquipmentDetailRequest):
                 
                 # Extract relevant details from the response
                 equipment_details = {}
-                if isinstance(data, dict):
+                if isinstance(data, dict) and "resultado" in data:
+                    resultado = data["resultado"]
+                    equipment_details = {
+                        "programasEstrategicos": resultado.get("programasEstrategicos", []),
+                        "ambientes": resultado.get("ambientes", []),
+                        "definicao": resultado.get("definicao", ""),
+                        "especificacaoSugerida": resultado.get("especificacaoSugerida", ""),
+                        "fornecedores": resultado.get("fornecedores", []),
+                        "precoSugerido": resultado.get("precoSugerido", 0),
+                        "descricao": resultado.get("descricao", ""),
+                        "classificacao": resultado.get("classificacao", ""),
+                        "coItem": resultado.get("coItem", request.coItem),
+                        "setor": resultado.get("setor", ""),
+                        "ambiente": resultado.get("ambiente", ""),
+                        "definicaoBasica": resultado.get("definicaoBasica", "")
+                    }
+                else:
+                    # Fallback for direct structure
                     equipment_details = {
                         "programasEstrategicos": data.get("programasEstrategicos", []),
                         "ambientes": data.get("ambientes", []),
