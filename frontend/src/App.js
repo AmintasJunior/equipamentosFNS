@@ -297,19 +297,30 @@ function App() {
                           {getDisplayValue(equipment.tipo)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {equipment.preco ? `R$ ${equipment.preco.toLocaleString('pt-BR')}` : '-'}
+                          {formatPrice(equipment.preco)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                          <button
-                            onClick={() => handleViewDetails(equipment)}
-                            className="text-green-600 hover:text-green-700 transition-colors duration-200"
-                            title="Ver detalhes"
-                          >
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                            </svg>
-                          </button>
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={() => handleViewDetails(equipment)}
+                              className="text-green-600 hover:text-green-700 transition-colors duration-200"
+                              title="Ver detalhes"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => addToCart(equipment)}
+                              className="text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                              title="Adicionar ao carrinho"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                              </svg>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
