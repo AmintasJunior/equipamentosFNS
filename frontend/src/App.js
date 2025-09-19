@@ -365,11 +365,14 @@ function App() {
                     {equipmentDetails.programasEstrategicos && equipmentDetails.programasEstrategicos.length > 0 && (
                       <div>
                         <h4 className="font-semibold text-gray-700 mb-2">Programas Estratégicos:</h4>
-                        <ul className="text-gray-600 text-sm space-y-1">
+                        <ul className="text-gray-600 text-sm space-y-2">
                           {equipmentDetails.programasEstrategicos.map((programa, index) => (
                             <li key={index} className="flex items-start">
-                              <span className="text-green-500 mr-2">•</span>
-                              {typeof programa === 'string' ? programa : programa.nome || JSON.stringify(programa)}
+                              <span className="text-green-500 mr-2 mt-1">•</span>
+                              <div>
+                                <div className="font-medium">{programa.programaEstrategico}</div>
+                                <div className="text-gray-500 text-xs">{programa.componente}</div>
+                              </div>
                             </li>
                           ))}
                         </ul>
@@ -380,11 +383,17 @@ function App() {
                     {equipmentDetails.ambientes && equipmentDetails.ambientes.length > 0 && (
                       <div>
                         <h4 className="font-semibold text-gray-700 mb-2">Ambientes:</h4>
-                        <ul className="text-gray-600 text-sm space-y-1">
+                        <ul className="text-gray-600 text-sm space-y-2">
                           {equipmentDetails.ambientes.map((ambiente, index) => (
                             <li key={index} className="flex items-start">
-                              <span className="text-blue-500 mr-2">•</span>
-                              {typeof ambiente === 'string' ? ambiente : ambiente.nome || JSON.stringify(ambiente)}
+                              <span className="text-blue-500 mr-2 mt-1">•</span>
+                              <div>
+                                <div className="font-medium">{ambiente.descricao}</div>
+                                <div className="text-gray-500 text-xs">
+                                  <span className="mr-3">Setor: {ambiente.setor}</span>
+                                  <span>Atividade: {ambiente.atividade}</span>
+                                </div>
+                              </div>
                             </li>
                           ))}
                         </ul>
@@ -395,11 +404,23 @@ function App() {
                     {equipmentDetails.fornecedores && equipmentDetails.fornecedores.length > 0 && (
                       <div>
                         <h4 className="font-semibold text-gray-700 mb-2">Fornecedores:</h4>
-                        <ul className="text-gray-600 text-sm space-y-1">
+                        <ul className="text-gray-600 text-sm space-y-2">
                           {equipmentDetails.fornecedores.map((fornecedor, index) => (
                             <li key={index} className="flex items-start">
-                              <span className="text-purple-500 mr-2">•</span>
-                              {typeof fornecedor === 'string' ? fornecedor : fornecedor.nome || JSON.stringify(fornecedor)}
+                              <span className="text-purple-500 mr-2 mt-1">•</span>
+                              <div>
+                                <div className="font-medium">{fornecedor.nome}</div>
+                                {fornecedor.telefone && (
+                                  <div className="text-gray-500 text-xs">Tel: {fornecedor.telefone}</div>
+                                )}
+                                {fornecedor.site && (
+                                  <div className="text-gray-500 text-xs">
+                                    <a href={fornecedor.site} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                      {fornecedor.site}
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
                             </li>
                           ))}
                         </ul>
