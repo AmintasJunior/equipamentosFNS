@@ -105,6 +105,20 @@ function App() {
     return value && value !== "null" && value !== "" ? value : "-";
   };
 
+  const removeAccents = (str) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9\s]/g, '')
+      .toLowerCase();
+  };
+
+  const handleSearchInputChange = (e) => {
+    const rawValue = e.target.value;
+    const cleanValue = removeAccents(rawValue);
+    setSearchTerm(cleanValue);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
