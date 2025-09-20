@@ -198,6 +198,103 @@ function App() {
         </div>
       </div>
 
+      {/* Modal do Carrinho */}
+      {showCart && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 max-w-4xl h-5/6 flex flex-col">
+            {/* Header do Carrinho */}
+            <div className="flex justify-between items-center p-6 border-b bg-white rounded-t-lg">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Carrinho de Compras ({getCartItemsCount()} {getCartItemsCount() === 1 ? 'item' : 'itens'})
+              </h3>
+              <button
+                onClick={() => setShowCart(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Conteúdo do Carrinho com Scroll */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {cart.length === 0 ? (
+                <div className="text-center py-20">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5-5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
+                  </svg>
+                  <p className="text-gray-500 mt-4">Seu carrinho está vazio</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{item.descricao}</h4>
+                        <p className="text-sm text-gray-500">{item.tipo}</p>
+                        <p className="text-sm font-medium text-green-600">{formatPrice(item.preco)}</p>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => updateQuantity(item.codigo, item.quantity - 1)}
+                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span className="w-8 text-center">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.codigo, item.quantity + 1)}
+                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">{formatPrice(item.preco * item.quantity)}</p>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.codigo)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                          title="Remover item"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Rodapé do Carrinho */}
+            {cart.length > 0 && (
+              <div className="p-6 border-t bg-gray-50 rounded-b-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-lg font-semibold">Total:</span>
+                  <span className="text-2xl font-bold text-green-600">{formatPrice(getCartTotal())}</span>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                  >
+                    Continuar Comprando
+                  </button>
+                  <button
+                    onClick={() => alert('Funcionalidade de checkout em desenvolvimento!')}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                  >
+                    Finalizar Compra
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Search Form */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
