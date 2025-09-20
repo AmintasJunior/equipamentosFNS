@@ -423,135 +423,135 @@ function App() {
 
       {/* Modal de Detalhes */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              {/* Header do Modal */}
-              <div className="flex justify-between items-center pb-3 border-b">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {selectedEquipment ? selectedEquipment.descricao : 'Detalhes do Equipamento'}
-                </h3>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2 max-w-4xl h-5/6 flex flex-col">
+            {/* Header Fixo */}
+            <div className="flex justify-between items-center p-6 border-b bg-white rounded-t-lg">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {selectedEquipment ? selectedEquipment.descricao : 'Detalhes do Equipamento'}
+              </h3>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
 
-              {/* Conteúdo do Modal */}
-              <div className="mt-4">
-                {detailsLoading ? (
-                  <div className="flex justify-center items-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-                    <span className="ml-2 text-gray-600">Carregando detalhes...</span>
-                  </div>
-                ) : equipmentDetails ? (
-                  <div className="space-y-4">
-                    {/* Definição */}
-                    {equipmentDetails.definicao && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Definição:</h4>
-                        <p className="text-gray-600 text-sm">{equipmentDetails.definicao}</p>
-                      </div>
-                    )}
+            {/* Conteúdo com Scroll */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {detailsLoading ? (
+                <div className="flex flex-col justify-center items-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                  <span className="ml-2 text-gray-600 mt-4">Carregando detalhes...</span>
+                </div>
+              ) : equipmentDetails ? (
+                <div className="space-y-6">
+                  {/* Definição */}
+                  {equipmentDetails.definicao && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Definição:</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">{equipmentDetails.definicao}</p>
+                    </div>
+                  )}
 
-                    {/* Especificação Sugerida */}
-                    {equipmentDetails.especificacaoSugerida && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Especificação Sugerida:</h4>
-                        <p className="text-gray-600 text-sm">{equipmentDetails.especificacaoSugerida}</p>
-                      </div>
-                    )}
+                  {/* Especificação Sugerida */}
+                  {equipmentDetails.especificacaoSugerida && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Especificação Sugerida:</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">{equipmentDetails.especificacaoSugerida}</p>
+                    </div>
+                  )}
 
-                    {/* Preço Sugerido */}
-                    {equipmentDetails.precoSugerido && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Preço Sugerido:</h4>
-                        <p className="text-green-600 font-medium">
-                          R$ {equipmentDetails.precoSugerido.toLocaleString('pt-BR')}
-                        </p>
-                      </div>
-                    )}
+                  {/* Preço Sugerido */}
+                  {equipmentDetails.precoSugerido && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Preço Sugerido:</h4>
+                      <p className="text-green-600 font-medium text-lg">
+                        {formatPrice(equipmentDetails.precoSugerido)}
+                      </p>
+                    </div>
+                  )}
 
-                    {/* Programas Estratégicos */}
-                    {equipmentDetails.programasEstrategicos && equipmentDetails.programasEstrategicos.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Programas Estratégicos:</h4>
-                        <ul className="text-gray-600 text-sm space-y-2">
-                          {equipmentDetails.programasEstrategicos.map((programa, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-green-500 mr-2 mt-1">•</span>
-                              <div>
-                                <div className="font-medium">{programa.programaEstrategico}</div>
-                                <div className="text-gray-500 text-xs">{programa.componente}</div>
+                  {/* Programas Estratégicos */}
+                  {equipmentDetails.programasEstrategicos && equipmentDetails.programasEstrategicos.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Programas Estratégicos:</h4>
+                      <ul className="text-gray-600 text-sm space-y-3">
+                        {equipmentDetails.programasEstrategicos.map((programa, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-green-500 mr-3 mt-1">•</span>
+                            <div>
+                              <div className="font-medium text-gray-800">{programa.programaEstrategico}</div>
+                              <div className="text-gray-500 text-xs mt-1">{programa.componente}</div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Ambientes */}
+                  {equipmentDetails.ambientes && equipmentDetails.ambientes.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Ambientes:</h4>
+                      <ul className="text-gray-600 text-sm space-y-3">
+                        {equipmentDetails.ambientes.map((ambiente, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-blue-500 mr-3 mt-1">•</span>
+                            <div>
+                              <div className="font-medium text-gray-800">{ambiente.descricao}</div>
+                              <div className="text-gray-500 text-xs mt-1">
+                                <span className="mr-4">Setor: {ambiente.setor}</span>
+                                <span>Atividade: {ambiente.atividade}</span>
                               </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-                    {/* Ambientes */}
-                    {equipmentDetails.ambientes && equipmentDetails.ambientes.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Ambientes:</h4>
-                        <ul className="text-gray-600 text-sm space-y-2">
-                          {equipmentDetails.ambientes.map((ambiente, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-blue-500 mr-2 mt-1">•</span>
-                              <div>
-                                <div className="font-medium">{ambiente.descricao}</div>
-                                <div className="text-gray-500 text-xs">
-                                  <span className="mr-3">Setor: {ambiente.setor}</span>
-                                  <span>Atividade: {ambiente.atividade}</span>
+                  {/* Fornecedores */}
+                  {equipmentDetails.fornecedores && equipmentDetails.fornecedores.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Fornecedores:</h4>
+                      <ul className="text-gray-600 text-sm space-y-3">
+                        {equipmentDetails.fornecedores.map((fornecedor, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-purple-500 mr-3 mt-1">•</span>
+                            <div>
+                              <div className="font-medium text-gray-800">{fornecedor.nome}</div>
+                              {fornecedor.telefone && (
+                                <div className="text-gray-500 text-xs mt-1">Tel: {fornecedor.telefone}</div>
+                              )}
+                              {fornecedor.site && (
+                                <div className="text-gray-500 text-xs mt-1">
+                                  <a href={fornecedor.site} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    {fornecedor.site}
+                                  </a>
                                 </div>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-center py-20">
+                  <p>Não foi possível carregar os detalhes do equipamento.</p>
+                </div>
+              )}
+            </div>
 
-                    {/* Fornecedores */}
-                    {equipmentDetails.fornecedores && equipmentDetails.fornecedores.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700 mb-2">Fornecedores:</h4>
-                        <ul className="text-gray-600 text-sm space-y-2">
-                          {equipmentDetails.fornecedores.map((fornecedor, index) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-purple-500 mr-2 mt-1">•</span>
-                              <div>
-                                <div className="font-medium">{fornecedor.nome}</div>
-                                {fornecedor.telefone && (
-                                  <div className="text-gray-500 text-xs">Tel: {fornecedor.telefone}</div>
-                                )}
-                                {fornecedor.site && (
-                                  <div className="text-gray-500 text-xs">
-                                    <a href={fornecedor.site} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                      {fornecedor.site}
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 text-center py-4">
-                    Não foi possível carregar os detalhes do equipamento.
-                  </div>
-                )}
-              </div>
-
-              {/* Footer do Modal */}
-              <div className="mt-6 pt-3 border-t flex justify-end">
+            {/* Rodapé Fixo */}
+            <div className="p-6 border-t bg-gray-50 rounded-b-lg">
+              <div className="flex justify-end">
                 <button
                   onClick={closeModal}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                  className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
                 >
                   Fechar
                 </button>
