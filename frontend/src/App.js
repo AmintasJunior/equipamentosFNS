@@ -375,6 +375,10 @@ function App() {
                           </button>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               {/* Pagination */}
               {totalResults > 10 && (
