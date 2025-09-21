@@ -226,45 +226,87 @@ function App() {
                   <p className="text-gray-500 mt-4">Seu carrinho está vazio</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {cart.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{item.descricao}</h4>
-                        <p className="text-sm text-gray-500">{item.tipo}</p>
-                        <p className="text-sm font-medium text-green-600">{formatPrice(item.preco)}</p>
+                <div className="space-y-6">
+                  {/* Informações da Unidade de Saúde */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-3">Unidade de Saúde Destinatária</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="healthUnit" className="block text-sm font-medium text-blue-800 mb-1">
+                          Nome da Unidade de Saúde *
+                        </label>
+                        <input
+                          id="healthUnit"
+                          type="text"
+                          value={healthUnit}
+                          onChange={(e) => setHealthUnit(e.target.value)}
+                          placeholder="Ex: UBS Central, Hospital Municipal, ESF..."
+                          className="w-full px-3 py-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => updateQuantity(item.codigo, item.quantity - 1)}
-                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                          >
-                            -
-                          </button>
-                          <span className="w-8 text-center">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.codigo, item.quantity + 1)}
-                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                          >
-                            +
-                          </button>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">{formatPrice(item.preco * item.quantity)}</p>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.codigo)}
-                          className="text-red-500 hover:text-red-700 p-1"
-                          title="Remover item"
-                        >
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
+                      <div>
+                        <label htmlFor="cnes" className="block text-sm font-medium text-blue-800 mb-1">
+                          CNES (Opcional)
+                        </label>
+                        <input
+                          id="cnes"
+                          type="text"
+                          placeholder="Código CNES da unidade"
+                          className="w-full px-3 py-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
                       </div>
                     </div>
-                  ))}
+                    <p className="text-xs text-blue-600 mt-2">
+                      * Todos os equipamentos serão enviados para esta unidade de saúde
+                    </p>
+                  </div>
+
+                  {/* Lista de Equipamentos */}
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-3">Equipamentos Selecionados</h4>
+                    <div className="space-y-4">
+                      {cart.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-white">
+                          <div className="flex-1">
+                            <h5 className="font-medium text-gray-900">{item.descricao}</h5>
+                            <p className="text-sm text-gray-500">{item.tipo}</p>
+                            <p className="text-sm font-medium text-green-600">Valor unitário: {formatPrice(item.preco)}</p>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => updateQuantity(item.codigo, item.quantity - 1)}
+                                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-medium">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.codigo, item.quantity + 1)}
+                                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="text-right min-w-[100px]">
+                              <p className="font-medium text-gray-900">{formatPrice(item.preco * item.quantity)}</p>
+                              <p className="text-xs text-gray-500">Subtotal</p>
+                            </div>
+                            <button
+                              onClick={() => removeFromCart(item.codigo)}
+                              className="text-red-500 hover:text-red-700 p-1 transition-colors"
+                              title="Remover equipamento"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
