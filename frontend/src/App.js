@@ -19,7 +19,6 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
-  const [healthUnit, setHealthUnit] = useState("");
 
   const searchEquipments = async (page = 1) => {
     if (!searchTerm.trim()) {
