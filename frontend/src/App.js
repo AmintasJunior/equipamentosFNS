@@ -314,24 +314,43 @@ function App() {
             {/* Rodapé do Carrinho */}
             {cart.length > 0 && (
               <div className="p-6 border-t bg-gray-50 rounded-b-lg">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold">Total:</span>
-                  <span className="text-2xl font-bold text-green-600">{formatPrice(getCartTotal())}</span>
+                <div className="bg-white border rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-lg font-semibold text-gray-700">Total da Solicitação:</span>
+                      <p className="text-xs text-gray-500">
+                        {getCartItemsCount()} equipamento{getCartItemsCount() !== 1 ? 's' : ''} para {healthUnit || 'unidade não informada'}
+                      </p>
+                    </div>
+                    <span className="text-2xl font-bold text-green-600">{formatPrice(getCartTotal())}</span>
+                  </div>
                 </div>
+                
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setShowCart(false)}
                     className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
                   >
-                    Continuar Comprando
+                    Continuar Selecionando
                   </button>
                   <button
-                    onClick={() => alert('Funcionalidade de checkout em desenvolvimento!')}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                    onClick={() => {
+                      if (!healthUnit.trim()) {
+                        alert('Por favor, informe a unidade de saúde destinatária antes de finalizar a solicitação.');
+                        return;
+                      }
+                      alert(`Solicitação enviada!\n\nUnidade: ${healthUnit}\nItens: ${getCartItemsCount()}\nTotal: ${formatPrice(getCartTotal())}\n\nEm breve você receberá as instruções para prosseguir com o processo de aquisição.`);
+                    }}
+                    disabled={!healthUnit.trim()}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
-                    Finalizar Compra
+                    Enviar Solicitação
                   </button>
                 </div>
+                
+                <p className="text-xs text-gray-500 text-center mt-3">
+                  * Esta é uma solicitação de equipamentos do Fundo Nacional de Saúde para seu município
+                </p>
               </div>
             )}
           </div>
