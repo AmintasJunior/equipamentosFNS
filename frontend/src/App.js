@@ -118,8 +118,25 @@ function App() {
           : item
       ));
     } else {
-      setCart([...cart, { ...equipment, quantity: 1 }]);
+      setCart([...cart, { ...equipment, quantity: 1, healthUnit: "" }]);
     }
+  };
+
+  const updateHealthUnit = (codigo, healthUnit) => {
+    setCart(cart.map(item => 
+      item.codigo === codigo 
+        ? { ...item, healthUnit: healthUnit }
+        : item
+    ));
+  };
+
+  const validateCart = () => {
+    return cart.every(item => item.healthUnit && item.healthUnit.trim() !== "");
+  };
+
+  const getHealthUnitsCount = () => {
+    const units = [...new Set(cart.filter(item => item.healthUnit).map(item => item.healthUnit))];
+    return units.length;
   };
 
   const removeFromCart = (codigo) => {
