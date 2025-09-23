@@ -217,12 +217,12 @@ function App() {
 
       {/* Modal do Carrinho */}
       {showCart && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3 max-w-4xl h-5/6 flex flex-col">
-            {/* Header do Carrinho */}
-            <div className="flex justify-between items-center p-6 border-b bg-white rounded-t-lg">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Carrinho de Compras ({getCartItemsCount()} {getCartItemsCount() === 1 ? 'item' : 'itens'})
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-6xl h-[90vh] flex flex-col">
+            {/* Header Compacto */}
+            <div className="flex justify-between items-center px-6 py-4 border-b bg-white rounded-t-lg">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Solicitação FNS ({getCartItemsCount()} {getCartItemsCount() === 1 ? 'item' : 'itens'})
               </h3>
               <button
                 onClick={() => setShowCart(false)}
