@@ -325,72 +325,67 @@ function App() {
               )}
             </div>
 
-            {/* Rodapé do Carrinho */}
+            {/* Rodapé Compacto */}
             {cart.length > 0 && (
-              <div className="p-6 border-t bg-gray-50 rounded-b-lg">
-                <div className="bg-white border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center mb-2">
+              <div className="px-6 py-4 border-t bg-gray-50 rounded-b-lg">
+                {/* Resumo e Validação */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-4">
                     <div>
-                      <span className="text-lg font-semibold text-gray-700">Total da Solicitação:</span>
+                      <span className="text-lg font-bold text-gray-900">{formatPrice(getCartTotal())}</span>
                       <p className="text-xs text-gray-500">
-                        {getCartItemsCount()} equipamento{getCartItemsCount() !== 1 ? 's' : ''} para {getHealthUnitsCount()} unidade{getHealthUnitsCount() !== 1 ? 's' : ''}
+                        {getCartItemsCount()} item{getCartItemsCount() !== 1 ? 's' : ''} • {getHealthUnitsCount()} unidade{getHealthUnitsCount() !== 1 ? 's' : ''}
                       </p>
                     </div>
-                    <span className="text-2xl font-bold text-green-600">{formatPrice(getCartTotal())}</span>
+                    {!validateCart() && (
+                      <div className="flex items-center text-sm text-red-600 bg-red-50 px-3 py-1 rounded-full">
+                        ⚠️ <span className="ml-1">Preencher todas as UBS</span>
+                      </div>
+                    )}
                   </div>
                   
-                  {/* Validação */}
-                  {!validateCart() && (
-                    <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-                      ⚠️ Alguns equipamentos ainda não têm unidade de saúde definida
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => setShowCart(false)}
-                    className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
-                  >
-                    Continuar Selecionando
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (!validateCart()) {
-                        alert('Por favor, defina a unidade de saúde destinatária para todos os equipamentos antes de enviar a solicitação.');
-                        return;
-                      }
-                      
-                      // Agrupar por unidade de saúde
-                      const groupedByUnit = cart.reduce((acc, item) => {
-                        if (!acc[item.healthUnit]) {
-                          acc[item.healthUnit] = [];
+                  {/* Botões de Ação */}
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setShowCart(false)}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors text-sm"
+                    >
+                      Continuar
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!validateCart()) {
+                          alert('Por favor, defina a unidade de saúde para todos os equipamentos.');
+                          return;
                         }
-                        acc[item.healthUnit].push(`${item.quantity}x ${item.descricao} (${formatPrice(item.preco * item.quantity)})`);
-                        return acc;
-                      }, {});
-                      
-                      let message = `Solicitação enviada com sucesso!\n\nResumo da solicitação:\n`;
-                      Object.keys(groupedByUnit).forEach(unit => {
-                        message += `\n📍 ${unit}:\n`;
-                        groupedByUnit[unit].forEach(item => {
-                          message += `  • ${item}\n`;
+                        
+                        // Resumo agrupado por unidade
+                        const groupedByUnit = cart.reduce((acc, item) => {
+                          if (!acc[item.healthUnit]) {
+                            acc[item.healthUnit] = [];
+                          }
+                          acc[item.healthUnit].push(`${item.quantity}x ${item.descricao}`);
+                          return acc;
+                        }, {});
+                        
+                        let message = `✅ Solicitação enviada!\n\n📋 Resumo:\n`;
+                        Object.keys(groupedByUnit).forEach(unit => {
+                          message += `\n🏥 ${unit}:\n`;
+                          groupedByUnit[unit].forEach(item => {
+                            message += `   • ${item}\n`;
+                          });
                         });
-                      });
-                      message += `\n💰 Total: ${formatPrice(getCartTotal())}\n\nEm breve você receberá as instruções para prosseguir com o processo de aquisição através do FNS.`;
-                      
-                      alert(message);
-                    }}
-                    disabled={!validateCart()}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Enviar Solicitação
-                  </button>
+                        message += `\n💰 Total: ${formatPrice(getCartTotal())}\n\n📧 Instruções de aquisição serão enviadas em breve.`;
+                        
+                        alert(message);
+                      }}
+                      disabled={!validateCart()}
+                      className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                      Enviar Solicitação
+                    </button>
+                  </div>
                 </div>
-                
-                <p className="text-xs text-gray-500 text-center mt-3">
-                  * Solicitação de equipamentos do Fundo Nacional de Saúde para múltiplas unidades
-                </p>
               </div>
             )}
           </div>
