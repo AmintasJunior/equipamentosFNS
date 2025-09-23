@@ -106,6 +106,132 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+# Rota para buscar municípios de Sergipe
+@api_router.get("/municipios", response_model=List[Municipio])
+async def get_municipios():
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            try:
+                # Tenta primeiro a API do DATASUS
+                response = await client.get("https://cnes.datasus.gov.br/services/municipios?estado=28")
+                if response.status_code == 200:
+                    data = response.json()
+                    if isinstance(data, list):
+                        return [Municipio(codigo=str(item.get('codigo', '')), 
+                                        nome=item.get('nome', '')) for item in data]
+            except Exception as api_error:
+                logger.warning(f"Erro na API do DATASUS: {api_error}")
+                
+        # Fallback com municípios de Sergipe
+        return [
+            Municipio(codigo="280010", nome="Amparo de São Francisco"),
+            Municipio(codigo="280020", nome="Aquidabã"),
+            Municipio(codigo="280030", nome="Aracaju"),
+            Municipio(codigo="280040", nome="Arauá"),
+            Municipio(codigo="280050", nome="Areia Branca"),
+            Municipio(codigo="280060", nome="Barra dos Coqueiros"),
+            Municipio(codigo="280070", nome="Boquim"),
+            Municipio(codigo="280080", nome="Brejo Grande"),
+            Municipio(codigo="280090", nome="Campo do Brito"),
+            Municipio(codigo="280100", nome="Canhoba"),
+            Municipio(codigo="280110", nome="Canindé de São Francisco"),
+            Municipio(codigo="280120", nome="Capela"),
+            Municipio(codigo="280130", nome="Carira"),
+            Municipio(codigo="280140", nome="Carmópolis"),
+            Municipio(codigo="280150", nome="Cedro de São João"),
+            Municipio(codigo="280160", nome="Cristinápolis"),
+            Municipio(codigo="280170", nome="Cumbe"),
+            Municipio(codigo="280180", nome="Divina Pastora"),
+            Municipio(codigo="280190", nome="Estância"),
+            Municipio(codigo="280200", nome="Feira Nova"),
+            Municipio(codigo="280210", nome="Frei Paulo"),
+            Municipio(codigo="280220", nome="Gararu"),
+            Municipio(codigo="280230", nome="Gracho Cardoso"),
+            Municipio(codigo="280240", nome="Ilha das Flores"),
+            Municipio(codigo="280250", nome="Indiaroba"),
+            Municipio(codigo="280260", nome="Itabaiana"),
+            Municipio(codigo="280270", nome="Itabaianinha"),
+            Municipio(codigo="280280", nome="Itabi"),
+            Municipio(codigo="280290", nome="Itaporanga d'Ajuda"),
+            Municipio(codigo="280300", nome="Japaratuba"),
+            Municipio(codigo="280310", nome="Japoatã"),
+            Municipio(codigo="280320", nome="Lagarto"),
+            Municipio(codigo="280330", nome="Laranjeiras"),
+            Municipio(codigo="280340", nome="Macambira"),
+            Municipio(codigo="280350", nome="Malhada dos Bois"),
+            Municipio(codigo="280360", nome="Malhador"),
+            Municipio(codigo="280370", nome="Maruim"),
+            Municipio(codigo="280380", nome="Moita Bonita"),
+            Municipio(codigo="280390", nome="Monte Alegre de Sergipe"),
+            Municipio(codigo="280400", nome="Muribeca"),
+            Municipio(codigo="280410", nome="Neópolis"),
+            Municipio(codigo="280420", nome="Nossa Senhora Aparecida"),
+            Municipio(codigo="280430", nome="Nossa Senhora da Glória"),
+            Municipio(codigo="280440", nome="Nossa Senhora das Dores"),
+            Municipio(codigo="280450", nome="Nossa Senhora de Lourdes"),
+            Municipio(codigo="280460", nome="Nossa Senhora do Socorro"),
+            Municipio(codigo="280470", nome="Pacatuba"),
+            Municipio(codigo="280480", nome="Pedra Mole"),
+            Municipio(codigo="280490", nome="Pedrinhas"),
+            Municipio(codigo="280500", nome="Pinhão"),
+            Municipio(codigo="280510", nome="Pirambu"),
+            Municipio(codigo="280520", nome="Poço Redondo"),
+            Municipio(codigo="280530", nome="Poço Verde"),
+            Municipio(codigo="280540", nome="Porto da Folha"),
+            Municipio(codigo="280550", nome="Propriá"),
+            Municipio(codigo="280560", nome="Riachão do Dantas"),
+            Municipio(codigo="280570", nome="Riachuelo"),
+            Municipio(codigo="280580", nome="Ribeirópolis"),
+            Municipio(codigo="280590", nome="Rosário do Catete"),
+            Municipio(codigo="280600", nome="Salgado"),
+            Municipio(codigo="280610", nome="Santa Luzia do Itanhy"),
+            Municipio(codigo="280620", nome="Santa Rosa de Lima"),
+            Municipio(codigo="280630", nome="Santana do São Francisco"),
+            Municipio(codigo="280640", nome="Santo Amaro das Brotas"),
+            Municipio(codigo="280650", nome="São Cristóvão"),
+            Municipio(codigo="280660", nome="São Domingos"),
+            Municipio(codigo="280670", nome="São Francisco"),
+            Municipio(codigo="280680", nome="São Miguel do Aleixo"),
+            Municipio(codigo="280690", nome="Simão Dias"),
+            Municipio(codigo="280700", nome="Siriri"),
+            Municipio(codigo="280710", nome="Telha"),
+            Municipio(codigo="280720", nome="Tobias Barreto"),
+            Municipio(codigo="280730", nome="Tomar do Geru"),
+            Municipio(codigo="280740", nome="Umbaúba")
+        ]
+    except Exception as e:
+        logger.error(f"Erro ao buscar municípios: {e}")
+        # Fallback mínimo
+        return [
+            Municipio(codigo="280030", nome="Aracaju"),
+            Municipio(codigo="280190", nome="Estância"),
+            Municipio(codigo="280260", nome="Itabaiana"),
+            Municipio(codigo="280320", nome="Lagarto"),
+            Municipio(codigo="280460", nome="Nossa Senhora do Socorro"),
+            Municipio(codigo="280550", nome="Propriá"),
+            Municipio(codigo="280650", nome="São Cristóvão"),
+            Municipio(codigo="280720", nome="Tobias Barreto")
+        ]
+
+# Rotas para gerenciar emendas
+@api_router.post("/emendas", response_model=Emenda)
+async def create_emenda(emenda: EmendaCreate):
+    emenda_obj = Emenda(**emenda.dict())
+    result = await db.emendas.insert_one(emenda_obj.dict())
+    return emenda_obj
+
+@api_router.get("/emendas", response_model=List[Emenda])
+async def get_emendas():
+    emendas = await db.emendas.find().to_list(1000)
+    return [Emenda(**emenda) for emenda in emendas]
+
+@api_router.get("/emendas/{emenda_id}", response_model=Emenda)
+async def get_emenda(emenda_id: str):
+    emenda = await db.emendas.find_one({"id": emenda_id})
+    if emenda:
+        return Emenda(**emenda)
+    raise HTTPException(status_code=404, detail="Emenda não encontrada")
+
 class EquipmentDetailRequest(BaseModel):
     coItem: str
     ano: int = 2025
