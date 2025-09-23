@@ -232,8 +232,8 @@ function App() {
               </button>
             </div>
 
-            {/* Conteúdo do Carrinho com Scroll */}
-            <div className="flex-1 overflow-y-auto p-6">
+            {/* Conteúdo Ampliado com Scroll */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">
               {cart.length === 0 ? (
                 <div className="text-center py-20">
                   <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,107 +242,84 @@ function App() {
                   <p className="text-gray-500 mt-4">Seu carrinho está vazio</p>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {/* Informações sobre a solicitação */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-blue-900 mb-2">Solicitação de Equipamentos - FNS</h4>
+                <div className="space-y-4">
+                  {/* Instrução Compacta */}
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
                     <p className="text-sm text-blue-700">
-                      Defina a unidade de saúde destinatária para cada equipamento. 
-                      Você pode enviar equipamentos para diferentes unidades na mesma solicitação.
+                      💡 <strong>Instruções:</strong> Defina a unidade de saúde para cada equipamento. Você pode enviar para unidades diferentes.
                     </p>
                   </div>
 
-                  {/* Lista de Equipamentos com Unidades */}
-                  <div>
-                    <h4 className="font-semibold text-gray-700 mb-4">Equipamentos e Destinatários</h4>
-                    <div className="space-y-4">
-                      {cart.map((item, index) => (
-                        <div key={index} className="border rounded-lg bg-white shadow-sm">
-                          {/* Cabeçalho do Item */}
-                          <div className="p-4 border-b bg-gray-50">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <h5 className="font-medium text-gray-900">{item.descricao}</h5>
-                                <p className="text-sm text-gray-500">{item.tipo}</p>
-                              </div>
-                              <button
-                                onClick={() => removeFromCart(item.codigo)}
-                                className="text-red-500 hover:text-red-700 p-1 transition-colors"
-                                title="Remover equipamento"
-                              >
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                              </button>
-                            </div>
+                  {/* Grid de Equipamentos - Layout Otimizado */}
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    {cart.map((item, index) => (
+                      <div key={index} className="border rounded-lg bg-white shadow-sm">
+                        {/* Cabeçalho Compacto */}
+                        <div className="px-4 py-3 border-b bg-gray-50 flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-medium text-gray-900 truncate">{item.descricao}</h5>
+                            <p className="text-xs text-gray-500">{item.tipo} • {formatPrice(item.preco)}</p>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.codigo)}
+                            className="text-red-400 hover:text-red-600 p-1 ml-2"
+                            title="Remover"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Conteúdo Principal */}
+                        <div className="p-4 space-y-3">
+                          {/* Campo UBS - Destaque */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              🏥 Unidade de Saúde Destinatária *
+                            </label>
+                            <input
+                              type="text"
+                              value={item.healthUnit || ""}
+                              onChange={(e) => updateHealthUnit(item.codigo, e.target.value)}
+                              placeholder="Ex: UBS Central, Hospital Municipal..."
+                              className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-2 focus:border-transparent ${
+                                item.healthUnit ? 
+                                'border-green-300 focus:ring-green-500 bg-green-50' : 
+                                'border-red-300 focus:ring-red-500 bg-red-50'
+                              }`}
+                            />
+                            {!item.healthUnit && (
+                              <p className="text-xs text-red-500 mt-1">⚠️ Campo obrigatório</p>
+                            )}
                           </div>
 
-                          {/* Conteúdo do Item */}
-                          <div className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              {/* Campo Unidade de Saúde */}
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                  Unidade de Saúde Destinatária *
-                                </label>
-                                <input
-                                  type="text"
-                                  value={item.healthUnit || ""}
-                                  onChange={(e) => updateHealthUnit(item.codigo, e.target.value)}
-                                  placeholder="Ex: UBS Central, Hospital Municipal..."
-                                  className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:border-transparent ${
-                                    item.healthUnit ? 
-                                    'border-green-300 focus:ring-green-500' : 
-                                    'border-red-300 focus:ring-red-500'
-                                  }`}
-                                  required
-                                />
-                                {!item.healthUnit && (
-                                  <p className="text-xs text-red-500 mt-1">* Campo obrigatório</p>
-                                )}
-                              </div>
-
-                              {/* Quantidade e Valores */}
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                  Quantidade e Valores
-                                </label>
-                                <div className="space-y-2">
-                                  <div className="flex items-center space-x-3">
-                                    <span className="text-sm text-gray-600">Quantidade:</span>
-                                    <div className="flex items-center space-x-2">
-                                      <button
-                                        onClick={() => updateQuantity(item.codigo, item.quantity - 1)}
-                                        className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors"
-                                      >
-                                        -
-                                      </button>
-                                      <span className="w-8 text-center font-medium">{item.quantity}</span>
-                                      <button
-                                        onClick={() => updateQuantity(item.codigo, item.quantity + 1)}
-                                        className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors"
-                                      >
-                                        +
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <div className="text-sm">
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-600">Valor unitário:</span>
-                                      <span className="font-medium">{formatPrice(item.preco)}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t pt-1 mt-1">
-                                      <span className="text-gray-900 font-medium">Subtotal:</span>
-                                      <span className="font-bold text-green-600">{formatPrice(item.preco * item.quantity)}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                          {/* Quantidade e Total - Layout Horizontal */}
+                          <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm font-medium text-gray-700">Qtd:</span>
+                              <button
+                                onClick={() => updateQuantity(item.codigo, item.quantity - 1)}
+                                className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center text-sm border"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(item.codigo, item.quantity + 1)}
+                                className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center text-sm border"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-green-600">{formatPrice(item.preco * item.quantity)}</div>
+                              <div className="text-xs text-gray-500">Subtotal</div>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
