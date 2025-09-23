@@ -43,6 +43,25 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class Municipio(BaseModel):
+    codigo: str
+    nome: str
+    estado: str = "28"  # Sergipe
+
+class Emenda(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    municipio_codigo: str
+    municipio_nome: str
+    valor: float
+    parlamentar: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class EmendaCreate(BaseModel):
+    municipio_codigo: str
+    municipio_nome: str
+    valor: float
+    parlamentar: str
+
 class EquipmentSearchRequest(BaseModel):
     nome: str
     page: int = 1
