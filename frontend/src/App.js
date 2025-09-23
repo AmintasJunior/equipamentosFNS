@@ -352,15 +352,22 @@ function App() {
             {cart.length > 0 && (
               <div className="p-6 border-t bg-gray-50 rounded-b-lg">
                 <div className="bg-white border rounded-lg p-4 mb-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center mb-2">
                     <div>
                       <span className="text-lg font-semibold text-gray-700">Total da Solicitação:</span>
                       <p className="text-xs text-gray-500">
-                        {getCartItemsCount()} equipamento{getCartItemsCount() !== 1 ? 's' : ''} para {healthUnit || 'unidade não informada'}
+                        {getCartItemsCount()} equipamento{getCartItemsCount() !== 1 ? 's' : ''} para {getHealthUnitsCount()} unidade{getHealthUnitsCount() !== 1 ? 's' : ''}
                       </p>
                     </div>
                     <span className="text-2xl font-bold text-green-600">{formatPrice(getCartTotal())}</span>
                   </div>
+                  
+                  {/* Validação */}
+                  {!validateCart() && (
+                    <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                      ⚠️ Alguns equipamentos ainda não têm unidade de saúde definida
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex space-x-3">
@@ -372,13 +379,32 @@ function App() {
                   </button>
                   <button
                     onClick={() => {
-                      if (!healthUnit.trim()) {
-                        alert('Por favor, informe a unidade de saúde destinatária antes de finalizar a solicitação.');
+                      if (!validateCart()) {
+                        alert('Por favor, defina a unidade de saúde destinatária para todos os equipamentos antes de enviar a solicitação.');
                         return;
                       }
-                      alert(`Solicitação enviada!\n\nUnidade: ${healthUnit}\nItens: ${getCartItemsCount()}\nTotal: ${formatPrice(getCartTotal())}\n\nEm breve você receberá as instruções para prosseguir com o processo de aquisição.`);
+                      
+                      // Agrupar por unidade de saúde
+                      const groupedByUnit = cart.reduce((acc, item) => {
+                        if (!acc[item.healthUnit]) {
+                          acc[item.healthUnit] = [];
+                        }
+                        acc[item.healthUnit].push(`${item.quantity}x ${item.descricao} (${formatPrice(item.preco * item.quantity)})`);
+                        return acc;
+                      }, {});
+                      
+                      let message = `Solicitação enviada com sucesso!\n\nResumo da solicitação:\n`;
+                      Object.keys(groupedByUnit).forEach(unit => {
+                        message += `\n📍 ${unit}:\n`;
+                        groupedByUnit[unit].forEach(item => {
+                          message += `  • ${item}\n`;
+                        });
+                      });
+                      message += `\n💰 Total: ${formatPrice(getCartTotal())}\n\nEm breve você receberá as instruções para prosseguir com o processo de aquisição através do FNS.`;
+                      
+                      alert(message);
                     }}
-                    disabled={!healthUnit.trim()}
+                    disabled={!validateCart()}
                     className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     Enviar Solicitação
@@ -386,7 +412,7 @@ function App() {
                 </div>
                 
                 <p className="text-xs text-gray-500 text-center mt-3">
-                  * Esta é uma solicitação de equipamentos do Fundo Nacional de Saúde para seu município
+                  * Solicitação de equipamentos do Fundo Nacional de Saúde para múltiplas unidades
                 </p>
               </div>
             )}
