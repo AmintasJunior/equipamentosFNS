@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
+import EmendaForm from "./components/EmendaForm";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function App() {
+  // Estados para navegação entre telas
+  const [telaAtual, setTelaAtual] = useState('emenda'); // 'emenda' ou 'equipamentos'
+  const [emendaAtual, setEmendaAtual] = useState(null);
+
+  // Estados do sistema de equipamentos original
   const [searchTerm, setSearchTerm] = useState("");
   const [equipments, setEquipments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,6 +26,22 @@ function App() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
 
+  // Função para iniciar pesquisa (chamada pelo EmendaForm)
+  const handleIniciarPesquisa = (dadosEmenda) => {
+    setEmendaAtual(dadosEmenda);
+    setTelaAtual('equipamentos');
+  };
+
+  // Função para voltar à tela de emenda
+  const handleVoltarEmenda = () => {
+    setTelaAtual('emenda');
+    setSearchTerm("");
+    setEquipments([]);
+    setSearched(false);
+    setError("");
+  };
+
+  // Funções do sistema de equipamentos original (mantidas integralmente)
   const searchEquipments = async (page = 1) => {
     if (!searchTerm.trim()) {
       setError("Por favor, digite um termo de busca");
@@ -182,6 +204,12 @@ function App() {
     setSearchTerm(cleanValue);
   };
 
+  // Renderização condicional baseada na tela atual
+  if (telaAtual === 'emenda') {
+    return <EmendaForm onIniciarPesquisa={handleIniciarPesquisa} />;
+  }
+
+  // Tela de equipamentos (sistema original com header modificado)
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -195,22 +223,42 @@ function App() {
               <p className="text-green-100 mt-2">
                 Sistema de consulta ao Fundo Nacional de Saúde
               </p>
-            </div>
-            {/* Cart Button */}
-            <button
-              onClick={() => setShowCart(true)}
-              className="relative bg-green-700 hover:bg-green-800 p-3 rounded-full transition-colors"
-              title="Ver carrinho"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
-              </svg>
-              {getCartItemsCount() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
-                  {getCartItemsCount()}
-                </span>
+              {emendaAtual && (
+                <div className="mt-3 bg-green-700 rounded-lg p-3 text-sm">
+                  <p><strong>Emenda:</strong> {emendaAtual.parlamentar} | <strong>Município:</strong> {emendaAtual.municipio_nome} | 
+                  <strong> Orçamento:</strong> {formatPrice(emendaAtual.valor)}</p>
+                </div>
               )}
-            </button>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Botão Voltar */}
+              <button
+                onClick={handleVoltarEmenda}
+                className="bg-green-700 hover:bg-green-800 p-3 rounded-full transition-colors"
+                title="Voltar para dados da emenda"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              
+              {/* Cart Button */}
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative bg-green-700 hover:bg-green-800 p-3 rounded-full transition-colors"
+                title="Ver carrinho"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                </svg>
+                {getCartItemsCount() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                    {getCartItemsCount()}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
