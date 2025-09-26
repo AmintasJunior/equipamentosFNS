@@ -32,6 +32,29 @@ function App() {
   const handleIniciarPesquisa = (dadosEmenda) => {
     setEmendaAtual(dadosEmenda);
     setTelaAtual('equipamentos');
+    // Carregar estabelecimentos do município selecionado
+    carregarEstabelecimentos(dadosEmenda.municipio_codigo);
+  };
+
+  // Função para carregar estabelecimentos
+  const carregarEstabelecimentos = async (municipioCodigo) => {
+    try {
+      setLoadingEstabelecimentos(true);
+      const response = await axios.get(`${API}/estabelecimentos/${municipioCodigo}`);
+      setEstabelecimentos(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar estabelecimentos:', error);
+      // Fallback com estabelecimentos genéricos
+      setEstabelecimentos([
+        { cnes: '0000001', nome_fantasia: 'UBS Central' },
+        { cnes: '0000002', nome_fantasia: 'Hospital Municipal' },
+        { cnes: '0000003', nome_fantasia: 'Centro de Saúde' },
+        { cnes: '0000004', nome_fantasia: 'Posto de Saúde' },
+        { cnes: '0000005', nome_fantasia: 'UPA 24h' }
+      ]);
+    } finally {
+      setLoadingEstabelecimentos(false);
+    }
   };
 
   // Função para voltar à tela de emenda
