@@ -165,14 +165,14 @@ function App() {
           : item
       ));
     } else {
-      setCart([...cart, { ...equipment, quantity: 1, healthUnit: "" }]);
+      setCart([...cart, { ...equipment, quantity: 1, healthUnit: "", healthUnitCnes: "" }]);
     }
   };
 
-  const updateHealthUnit = (codigo, healthUnit) => {
+  const updateHealthUnit = (codigo, healthUnit, healthUnitCnes = "") => {
     setCart(cart.map(item => 
       item.codigo === codigo 
-        ? { ...item, healthUnit: healthUnit }
+        ? { ...item, healthUnit: healthUnit, healthUnitCnes: healthUnitCnes }
         : item
     ));
   };
