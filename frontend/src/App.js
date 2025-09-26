@@ -365,22 +365,39 @@ function App() {
 
                         {/* Conteúdo Principal */}
                         <div className="p-4 space-y-3">
-                          {/* Campo UBS - Destaque */}
+                          {/* Campo UBS - Dropdown */}
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               🏥 Unidade de Saúde Destinatária *
                             </label>
-                            <input
-                              type="text"
-                              value={item.healthUnit || ""}
-                              onChange={(e) => updateHealthUnit(item.codigo, e.target.value)}
-                              placeholder="Ex: UBS Central, Hospital Municipal..."
-                              className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-2 focus:border-transparent ${
-                                item.healthUnit ? 
-                                'border-green-300 focus:ring-green-500 bg-green-50' : 
-                                'border-red-300 focus:ring-red-500 bg-red-50'
-                              }`}
-                            />
+                            {loadingEstabelecimentos ? (
+                              <div className="flex items-center justify-center p-2 border border-gray-300 rounded-md">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
+                                <span className="text-xs text-gray-600">Carregando...</span>
+                              </div>
+                            ) : (
+                              <select
+                                value={item.healthUnitCnes || ""}
+                                onChange={(e) => {
+                                  const selectedEstab = estabelecimentos.find(est => est.cnes === e.target.value);
+                                  const nomeCompleto = selectedEstab ? 
+                                    `${selectedEstab.nome_fantasia} - ${selectedEstab.cnes}` : "";
+                                  updateHealthUnit(item.codigo, nomeCompleto, e.target.value);
+                                }}
+                                className={`w-full px-3 py-2 text-sm border rounded-md focus:ring-2 focus:border-transparent ${
+                                  item.healthUnit ? 
+                                  'border-green-300 focus:ring-green-500 bg-green-50' : 
+                                  'border-red-300 focus:ring-red-500 bg-red-50'
+                                }`}
+                              >
+                                <option value="">Selecione uma unidade de saúde</option>
+                                {estabelecimentos.map((estabelecimento) => (
+                                  <option key={estabelecimento.cnes} value={estabelecimento.cnes}>
+                                    {estabelecimento.nome_fantasia} - {estabelecimento.cnes}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
                             {!item.healthUnit && (
                               <p className="text-xs text-red-500 mt-1">⚠️ Campo obrigatório</p>
                             )}
