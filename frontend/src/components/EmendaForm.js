@@ -49,12 +49,36 @@ const EmendaForm = ({ onIniciarPesquisa }) => {
         municipio_codigo: value,
         municipio_nome: municipioSelecionado ? municipioSelecionado.nome : ''
       }));
+    } else if (name === 'valor') {
+      // Remove tudo que não é dígito
+      const numeroLimpo = value.replace(/\D/g, '');
+      
+      // Converte para número e formata
+      const numero = parseFloat(numeroLimpo) / 100;
+      
+      // Formata como moeda brasileira
+      const valorFormatado = numero.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
+      });
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: valorFormatado
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
         [name]: value
       }));
     }
+  };
+
+  const getValorNumerico = () => {
+    // Converte o valor formatado de volta para número
+    const numeroLimpo = formData.valor.replace(/[^\d,]/g, '').replace(',', '.');
+    return parseFloat(numeroLimpo) || 0;
   };
 
   const handleSubmit = async (e) => {
