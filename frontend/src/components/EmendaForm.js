@@ -169,13 +169,11 @@ const EmendaForm = ({ onIniciarPesquisa }) => {
               Valor da Emenda (R$) <span className="text-red-500">*</span>
             </label>
             <input
-              type="number"
+              type="text"
               name="valor"
               value={formData.valor}
               onChange={handleInputChange}
-              step="0.01"
-              min="0"
-              placeholder="Ex: 150000.00"
+              placeholder="R$ 150.000,00"
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
             />
