@@ -62,6 +62,14 @@ class EmendaCreate(BaseModel):
     valor: float
     parlamentar: str
 
+class Estabelecimento(BaseModel):
+    cnes: str
+    nome_fantasia: str
+    razao_social: Optional[str] = None
+    logradouro: Optional[str] = None
+    bairro: Optional[str] = None
+    telefone: Optional[str] = None
+
 class EquipmentSearchRequest(BaseModel):
     nome: str
     page: int = 1
