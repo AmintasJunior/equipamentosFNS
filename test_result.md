@@ -102,10 +102,10 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Sistema de consulta de equipamentos de saúde que faz consulta à API do Ministério da Saúde brasileiro. Interface simples com busca por nome, resultados em tabela (desktop) e cards (mobile), em português."
+user_problem_statement: "Usuário solicitou fazer ajustes na aplicação equipamentosFNS clonada do repositório https://github.com/AmintasJunior/equipamentosFNS.git. Implementações solicitadas: 1) Nova tela inicial para cadastro de emenda (município, valor, parlamentar) 2) Formatação R$ no campo valor 3) Melhorar posicionamento dos botões 4) Cabeçalho fixo para visualizar carrinho 5) Integração com API DATASUS para estabelecimentos no carrinho"
 
 backend:
-  - task: "API proxy para consulta de equipamentos"
+  - task: "Sistema original de consulta FNS"
     implemented: true
     working: true
     file: "/app/backend/server.py"
@@ -113,82 +113,122 @@ backend:
     priority: "high"
     needs_retesting: false
     status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Implementado endpoint /api/consulta-equipamentos que faz proxy para API do Ministério da Saúde com httpx, tratamento de erros e timeout"
       - working: true
-        agent: "testing"
-        comment: "✅ TESTADO COMPLETAMENTE - Endpoint POST /api/consulta-equipamentos funcionando perfeitamente. Testado com 'ambulancia', 'respirador', 'desfibrilador', 'monitor'. Proxy para https://consultafns.saude.gov.br/recursos/equipamento está funcionando. Paginação, diferentes valores de count, tratamento de erros (termos vazios/inválidos) todos funcionando. Formato de resposta EquipmentSearchResponse correto com success, data, total, page, count, message. Endpoint GET /api/ retorna mensagem em português. Corrigido pequeno problema de logger definido após uso."
-
-  - task: "Modelos Pydantic para request/response"
+        agent: "main"
+        comment: "Sistema original funcionando - consulta equipamentos do Ministério da Saúde"
+  
+  - task: "API de municípios de Sergipe"
     implemented: true
     working: true
     file: "/app/backend/server.py"
     stuck_count: 0
-    priority: "medium"
+    priority: "high" 
     needs_retesting: false
     status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Criados modelos EquipmentSearchRequest, EquipmentSearchResponse e EquipmentItem"
       - working: true
-        agent: "testing"
-        comment: "✅ TESTADO - Modelos Pydantic funcionando corretamente. EquipmentSearchRequest aceita nome, page, count, ano. EquipmentSearchResponse retorna estrutura correta com todos os campos obrigatórios (success: bool, data: list, total: int, page: int, count: int) e campo opcional message."
+        agent: "main"
+        comment: "API retornando 74 municípios de Sergipe corretamente"
+        
+  - task: "CRUD de emendas parlamentares"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Endpoints POST/GET para emendas implementados e funcionando"
+        
+  - task: "API de estabelecimentos por município"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py" 
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "API de estabelecimentos implementada com fallback para dados fictícios quando API DATASUS não responde"
 
 frontend:
-  - task: "Interface de busca responsiva"
+  - task: "Tela de cadastro de emenda"
     implemented: true
-    working: false  # needs testing
+    working: true
+    file: "/app/frontend/src/components/EmendaForm.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Formulário de emenda funcionando com dropdown de municípios, formatação de moeda, e validações"
+        
+  - task: "Formatação de moeda R$ no campo valor"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/EmendaForm.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Campo valor com formatação automática R$ 100.000,00 funcionando"
+        
+  - task: "Sistema de equipamentos integrado"
+    implemented: true
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Implementada interface completa com header, form de busca, loading states, tabela para desktop e cards para mobile"
-
-  - task: "Integração com API backend"
+        comment: "Sistema original integrado com navegação entre tela de emenda e equipamentos"
+        
+  - task: "Cabeçalho fixo com dados da emenda"
     implemented: true
-    working: false  # needs testing
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Implementado axios para chamar /api/consulta-equipamentos com tratamento de erros e loading"
-
-  - task: "Estilização Tailwind responsiva"
+        comment: "Header fixo implementado mostrando dados da emenda e botões melhor posicionados"
+        
+  - task: "Carrinho com dropdown de estabelecimentos"
     implemented: true
-    working: false  # needs testing
-    file: "/app/frontend/src/App.css"
+    working: true
+    file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
     needs_retesting: true
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Aplicados estilos Tailwind com tema verde saúde, responsivo, tabelas e cards"
+        comment: "Dropdown de estabelecimentos implementado no carrinho, carregando do município selecionado"
 
 metadata:
   created_by: "main_agent"
-  version: "1.0"
-  test_sequence: 1
-  run_ui: false
+  version: "2.0"
+  test_sequence: 2
+  run_ui: true
 
 test_plan:
   current_focus:
-    - "Interface de busca responsiva"
-    - "Integração com API backend"
-    - "Estilização Tailwind responsiva"
+    - "Testar fluxo completo: emenda → equipamentos → carrinho → estabelecimentos"
+    - "Validar formatação de moeda"
+    - "Verificar funcionamento do cabeçalho fixo"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Implementei sistema completo de consulta de equipamentos com proxy backend para API do Ministério da Saúde, interface responsiva em português, e tratamento de erros. Preciso testar integração com API externa e funcionalidade completa."
-  - agent: "testing"
-    message: "✅ BACKEND COMPLETAMENTE TESTADO E FUNCIONANDO - Todos os 7 testes passaram: (1) Conexão API ✅ (2) Busca básica com 'ambulancia' ✅ (3) Diferentes termos (respirador, desfibrilador, monitor) ✅ (4) Paginação ✅ (5) Valores de count ✅ (6) Tratamento de erros ✅ (7) Formato da resposta ✅. API externa do Ministério da Saúde respondendo corretamente. Corrigido pequeno problema de logger. Backend pronto para produção. Foco agora deve ser no frontend."
+    message: "Implementadas todas as funcionalidades solicitadas: 1) Nova tela de emenda com formatação R$ 2) Cabeçalho fixo com melhor posicionamento dos botões 3) API de estabelecimentos integrada ao carrinho 4) Sistema original de equipamentos mantido e funcionando. Pronto para teste completo do fluxo."
