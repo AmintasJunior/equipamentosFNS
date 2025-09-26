@@ -338,7 +338,7 @@ function App() {
                   {/* Instrução Compacta */}
                   <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
                     <p className="text-sm text-blue-700">
-                      💡 <strong>Instruções:</strong> Defina a unidade de saúde para cada equipamento. Você pode enviar para unidades diferentes.
+                      💡 <strong>Instruções:</strong> Selecione a unidade de saúde destinatária para cada equipamento. As unidades são carregadas do município da emenda ({emendaAtual?.municipio_nome}).
                     </p>
                   </div>
 
