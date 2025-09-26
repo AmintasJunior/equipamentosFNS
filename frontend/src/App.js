@@ -25,6 +25,8 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [loadingEstabelecimentos, setLoadingEstabelecimentos] = useState(false);
 
   // Função para iniciar pesquisa (chamada pelo EmendaForm)
   const handleIniciarPesquisa = (dadosEmenda) => {
