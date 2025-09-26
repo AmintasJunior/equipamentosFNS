@@ -96,7 +96,7 @@ const EmendaForm = ({ onIniciarPesquisa }) => {
       const response = await axios.post(`${API}/emendas`, {
         municipio_codigo: formData.municipio_codigo,
         municipio_nome: formData.municipio_nome,
-        valor: parseFloat(formData.valor),
+        valor: getValorNumerico(),
         parlamentar: formData.parlamentar
       });
 
