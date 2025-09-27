@@ -246,7 +246,14 @@ async def get_estabelecimentos(municipio_codigo: str):
     try:
         logger.info(f"Buscando estabelecimentos do município: {municipio_codigo}")
         
-        async with httpx.AsyncClient(timeout=30.0, verify=False) as client:
+        async with httpx.AsyncClient(
+            timeout=30.0, 
+            verify=False,  # Ignora verificação SSL
+            follow_redirects=True,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        ) as client:
             try:
                 # Tenta a API do DATASUS
                 url = f"https://cnes.datasus.gov.br/services/estabelecimentos?municipio={municipio_codigo}"
