@@ -242,85 +242,91 @@ async def get_emenda(emenda_id: str):
         return Emenda(**emenda)
     raise HTTPException(status_code=404, detail="Emenda não encontrada")
 
+# Função auxiliar para fazer requisição síncrona aos estabelecimentos
+def fetch_estabelecimentos_sync(municipio_codigo: str):
+    try:
+        url = f"https://cnes.datasus.gov.br/services/estabelecimentos?municipio={municipio_codigo}"
+        logger.info(f"Fazendo requisição síncrona para: {url}")
+        
+        # Configurar requests para ignorar SSL e usar timeout
+        response = requests.get(
+            url, 
+            timeout=30,
+            verify=False,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        )
+        
+        logger.info(f"Status da resposta síncrona: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            logger.info(f"Dados recebidos: {type(data)} com {len(data) if isinstance(data, list) else 'tamanho desconhecido'}")
+            
+            estabelecimentos = []
+            
+            if isinstance(data, list) and len(data) > 0:
+                logger.info(f"Processando {len(data)} estabelecimentos...")
+                
+                for idx, item in enumerate(data[:50]):
+                    if isinstance(item, dict):
+                        nome_fantasia = item.get('noFantasia', '').strip()
+                        cnes = item.get('cnes', '').strip()
+                        
+                        # Log dos primeiros itens para debug
+                        if idx < 3:
+                            logger.info(f"Item {idx}: noFantasia='{nome_fantasia}', cnes='{cnes}', keys={list(item.keys())}")
+                        
+                        if nome_fantasia and cnes:
+                            estabelecimentos.append({
+                                'cnes': cnes,
+                                'nome_fantasia': nome_fantasia,
+                                'razao_social': item.get('razaoSocial', ''),
+                                'logradouro': item.get('logradouro', ''),
+                                'bairro': item.get('bairro', ''),
+                                'telefone': item.get('telefone', '')
+                            })
+                        elif idx < 5:
+                            logger.warning(f"Item {idx} rejeitado: noFantasia='{nome_fantasia}', cnes='{cnes}'")
+            
+            logger.info(f"Retornando {len(estabelecimentos)} estabelecimentos da API do DATASUS")
+            return estabelecimentos
+        else:
+            logger.warning(f"API do DATASUS retornou status: {response.status_code}")
+            return None
+            
+    except requests.exceptions.Timeout:
+        logger.warning("Timeout na requisição síncrona para API do DATASUS")
+        return None
+    except requests.exceptions.SSLError as ssl_error:
+        logger.warning(f"Erro SSL na requisição síncrona: {ssl_error}")
+        return None
+    except Exception as e:
+        logger.warning(f"Erro na requisição síncrona: {e}")
+        return None
+
 # Rota para buscar estabelecimentos por município
 @api_router.get("/estabelecimentos/{municipio_codigo}", response_model=List[Estabelecimento])
 async def get_estabelecimentos(municipio_codigo: str):
     try:
         logger.info(f"Buscando estabelecimentos do município: {municipio_codigo}")
         
-        async with httpx.AsyncClient(
-            timeout=30.0, 
-            verify=False,  # Ignora verificação SSL
-            follow_redirects=True,
-            headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        ) as client:
-            try:
-                # Tenta a API do DATASUS
-                url = f"https://cnes.datasus.gov.br/services/estabelecimentos?municipio={municipio_codigo}"
-                logger.info(f"Fazendo requisição para: {url}")
-                
-                # Fazer a requisição
-                response = await client.get(url)
-                logger.info(f"Status da resposta: {response.status_code}")
-                
-                if response.status_code == 200:
-                    try:
-                        data = response.json()
-                        logger.info(f"Dados recebidos: {type(data)} com {len(data) if isinstance(data, list) else 'tamanho desconhecido'}")
-                        
-                        estabelecimentos = []
-                        
-                        if isinstance(data, list) and len(data) > 0:
-                            logger.info(f"Processando {len(data)} estabelecimentos...")
-                            
-                            for idx, item in enumerate(data[:50]):  # Limitar a 50 estabelecimentos
-                                if isinstance(item, dict):
-                                    nome_fantasia = item.get('noFantasia', '').strip()
-                                    cnes = item.get('cnes', '').strip()
-                                    
-                                    # Log dos primeiros itens para debug
-                                    if idx < 3:
-                                        logger.info(f"Item {idx}: noFantasia='{nome_fantasia}', cnes='{cnes}', keys={list(item.keys())}")
-                                    
-                                    if nome_fantasia and cnes:
-                                        estabelecimentos.append(Estabelecimento(
-                                            cnes=cnes,
-                                            nome_fantasia=nome_fantasia,
-                                            razao_social=item.get('razaoSocial', ''),
-                                            logradouro=item.get('logradouro', ''),
-                                            bairro=item.get('bairro', ''),
-                                            telefone=item.get('telefone', '')
-                                        ))
-                                    elif idx < 5:  # Log dos problemas nos primeiros itens
-                                        logger.warning(f"Item {idx} rejeitado: noFantasia='{nome_fantasia}', cnes='{cnes}'")
-                        
-                        if len(estabelecimentos) > 0:
-                            logger.info(f"Retornando {len(estabelecimentos)} estabelecimentos da API do DATASUS")
-                            return estabelecimentos
-                        else:
-                            logger.warning("API do DATASUS retornou dados mas nenhum estabelecimento válido foi encontrado")
-                    except Exception as json_error:
-                        logger.error(f"Erro ao processar JSON: {json_error}")
-                        # Tentar ler como texto para debug
-                        try:
-                            text_response = response.text[:500] + "..." if len(response.text) > 500 else response.text
-                            logger.info(f"Resposta como texto: {text_response}")
-                        except:
-                            pass
-                else:
-                    logger.warning(f"API do DATASUS retornou status: {response.status_code}")
-                    if response.status_code != 200:
-                        try:
-                            logger.warning(f"Conteúdo da resposta: {response.text[:200]}...")
-                        except:
-                            pass
-                    
-            except asyncio.TimeoutError:
-                logger.warning("Timeout na API do DATASUS para estabelecimentos")
-            except Exception as api_error:
-                logger.warning(f"Erro na API do DATASUS para estabelecimentos: {api_error}")
+        # Usar ThreadPoolExecutor para fazer requisição síncrona
+        with ThreadPoolExecutor() as executor:
+            estabelecimentos_data = await asyncio.get_event_loop().run_in_executor(
+                executor, 
+                fetch_estabelecimentos_sync, 
+                municipio_codigo
+            )
+        
+        if estabelecimentos_data:
+            # Converter para objetos Estabelecimento
+            estabelecimentos = [
+                Estabelecimento(**item) for item in estabelecimentos_data
+            ]
+            logger.info(f"Retornando {len(estabelecimentos)} estabelecimentos reais da API do DATASUS")
+            return estabelecimentos
                 
         # Fallback com estabelecimentos fictícios baseados no município
         logger.info("Usando fallback com estabelecimentos fictícios")
