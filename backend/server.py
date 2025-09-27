@@ -11,6 +11,8 @@ import uuid
 from datetime import datetime
 import httpx
 import asyncio
+import requests
+from concurrent.futures import ThreadPoolExecutor
 
 # Configure logging first
 logging.basicConfig(
