@@ -244,20 +244,34 @@ async def get_emenda(emenda_id: str):
 @api_router.get("/estabelecimentos/{municipio_codigo}", response_model=List[Estabelecimento])
 async def get_estabelecimentos(municipio_codigo: str):
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        logger.info(f"Buscando estabelecimentos do município: {municipio_codigo}")
+        
+        async with httpx.AsyncClient(timeout=30.0, verify=False) as client:
             try:
-                # Tenta primeiro a API do DATASUS
-                logger.info(f"Buscando estabelecimentos do município: {municipio_codigo}")
-                response = await client.get(f"https://cnes.datasus.gov.br/services/estabelecimentos?municipio={municipio_codigo}")
+                # Tenta a API do DATASUS
+                url = f"https://cnes.datasus.gov.br/services/estabelecimentos?municipio={municipio_codigo}"
+                logger.info(f"Fazendo requisição para: {url}")
+                
+                response = await client.get(url)
+                logger.info(f"Status da resposta: {response.status_code}")
+                
                 if response.status_code == 200:
                     data = response.json()
+                    logger.info(f"Dados recebidos: {len(data) if isinstance(data, list) else 'não é lista'}")
+                    
                     estabelecimentos = []
                     
-                    if isinstance(data, list):
+                    if isinstance(data, list) and len(data) > 0:
+                        logger.info(f"Processando {len(data)} estabelecimentos...")
+                        
                         for item in data[:50]:  # Limitar a 50 estabelecimentos
                             if isinstance(item, dict):
                                 nome_fantasia = item.get('noFantasia', '').strip()
                                 cnes = item.get('cnes', '').strip()
+                                
+                                # Log do primeiro item para debug
+                                if len(estabelecimentos) == 0:
+                                    logger.info(f"Primeiro item: noFantasia='{nome_fantasia}', cnes='{cnes}'")
                                 
                                 if nome_fantasia and cnes:
                                     estabelecimentos.append(Estabelecimento(
@@ -269,21 +283,30 @@ async def get_estabelecimentos(municipio_codigo: str):
                                         telefone=item.get('telefone', '')
                                     ))
                     
-                    logger.info(f"Encontrados {len(estabelecimentos)} estabelecimentos")
-                    return estabelecimentos[:50]  # Limitar retorno
+                    if len(estabelecimentos) > 0:
+                        logger.info(f"Retornando {len(estabelecimentos)} estabelecimentos da API do DATASUS")
+                        return estabelecimentos
+                    else:
+                        logger.warning("API do DATASUS retornou dados mas nenhum estabelecimento válido foi encontrado")
+                else:
+                    logger.warning(f"API do DATASUS retornou status: {response.status_code}")
                     
+            except asyncio.TimeoutError:
+                logger.warning("Timeout na API do DATASUS para estabelecimentos")
             except Exception as api_error:
                 logger.warning(f"Erro na API do DATASUS para estabelecimentos: {api_error}")
                 
         # Fallback com estabelecimentos fictícios baseados no município
+        logger.info("Usando fallback com estabelecimentos fictícios")
         municipio_nome = "Município"
         try:
             # Buscar nome do município
-            municipio = next((m for m in await get_municipios() if m.codigo == municipio_codigo), None)
+            municipios = await get_municipios()
+            municipio = next((m for m in municipios if m.codigo == municipio_codigo), None)
             if municipio:
                 municipio_nome = municipio.nome
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"Erro ao buscar nome do município: {e}")
             
         return [
             Estabelecimento(cnes="0000001", nome_fantasia=f"UBS Central {municipio_nome}"),
@@ -294,7 +317,7 @@ async def get_estabelecimentos(municipio_codigo: str):
         ]
         
     except Exception as e:
-        logger.error(f"Erro ao buscar estabelecimentos: {e}")
+        logger.error(f"Erro geral ao buscar estabelecimentos: {e}")
         return [
             Estabelecimento(cnes="0000001", nome_fantasia="UBS Central"),
             Estabelecimento(cnes="0000002", nome_fantasia="Hospital Municipal"),
